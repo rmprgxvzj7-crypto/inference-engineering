@@ -327,117 +327,97 @@ If parameters were initialized identically and treated perfectly symmetrically b
 
 ## Part III — Why linear layers collapse and how ReLU helps
 
-This is a separate toy example from the attention calculations above. Start with one input number so every operation is visible.
+Let’s pause ReLU. **The problem is that some tasks cannot be solved by “multiply the input by one fixed number.”**
 
-### 1. What does “collapse into one layer” mean?
+Imagine we want a network to learn these answers:
 
-Suppose one layer multiplies by 2 and the next multiplies by 3. For input 4:
-
-$$4\xrightarrow{\times2}8\xrightarrow{\times3}24.$$
-
-One layer multiplying by 6 gives exactly the same answer. This works for every input because:
-
-$$3(2x)=6x.$$
-
-“Collapse” means we could replace those two layers with one and preserve their entire input/output behavior. It does not mean that the layers disappear during training.
-
-Matrix multiplication follows the same rule. Keeping the row-vector convention used earlier in this chapter:
-
-$$\underbrace{(xA)B}_{\text{two successive transformations}}=x\underbrace{(AB)}_{\text{one combined matrix}}.$$
-
-Even 100 consecutive fixed matrix multiplications can be combined into one matrix, provided no other operation intervenes.
-
-### 2. Why is that a problem?
-
-We want extra layers to help represent more complicated relationships. Consider these desired answers:
-
-| Input | Desired output |
+| Input | Answer we want |
 |---:|---:|
 | 1 | 2 |
 | 2 | 4 |
 | 3 | 10 |
 
-Multiplying by 2 gets the first two right:
+**Try one layer: multiply by 2.**
 
-$$1\times2=2,\qquad2\times2=4.$$
+$
+1\times2=2\quad \checkmark
+$
+$
+2\times2=4\quad \checkmark
+$
+$
+3\times2=6\quad \text{❌ We wanted 10}
+$
 
-But the third answer is wrong:
+You might think: **“One layer is too simple. Let’s add more layers!”**
 
-$$3\times2=6\ne10.$$
+But suppose three layers learn to multiply by **4**, then **5**, then **0.1**:
 
-Could more multiplication-only layers fix this? Suppose three layers multiply by 4, then 5, then 0.1:
+$
+x \xrightarrow{\times4} 4x
+\xrightarrow{\times5}20x
+\xrightarrow{\times0.1}2x
+$
 
-$$x\xrightarrow{\times4}4x\xrightarrow{\times5}20x\xrightarrow{\times0.1}2x.$$
+We’re still just multiplying by 2. **The third answer is still 6.**
 
-We are still just multiplying by 2. The third answer remains 6. Different weights change the final multiplier, but no fixed multiplier gives all three desired answers: the first row forces it to be 2, which makes the third row wrong.
+Choosing different weights changes the final multiplier—but **no multiplier gives all three answers in the table**. The first row forces it to be 2, which makes the third row wrong.
 
-With 100 scalar layers, the output is still:
+That is the problem: **adding more multiplication-only layers cannot fix this limitation.** Bigger matrices have the corresponding limitation: stacking them still produces one linear transformation.
 
-$$y=xw_1w_2\cdots w_{100}=xC.$$
+We need an operation that lets the network do something beyond a fixed linear transformation. That’s why the paragraph introduces nonlinear activation functions.
 
-Bigger matrices have the corresponding limitation: their composition remains a linear transformation. Adding depth alone does not escape that family of functions.
+---
 
-### 3. What does ReLU do?
+**ReLU can help us get exactly those answers: $1→2,\;2→4,\;3→10$.** But simply putting ReLU between our previous positive multiplications would change nothing—all the numbers are already positive.
 
-ReLU replaces a negative number with zero and leaves a nonnegative number unchanged:
+We need a layer that also **subtracts 2**. Neural-network layers can learn additions or subtractions like this; they’re called **biases**.
 
-$$\mathrm{ReLU}(z)=\max(0,z).$$
+Here’s one possible solution. We’re choosing the numbers ourselves to show how it works.
 
-For a vector, it applies this rule to every coordinate separately:
+**First, double the input:**
 
-$$[-4,7,-1]\xrightarrow{\mathrm{ReLU}}[0,7,0].$$
+$
+\text{base output}=2x
+$
 
-Simply putting ReLU between the previous positive multiplications would change nothing for our positive inputs. We need intermediate values that ReLU can selectively block.
+That gives us $2,4,6$. The first two answers are correct. **Only the third needs an extra 4.**
 
-### 4. How does ReLU solve this exact example?
+So build an extra contribution using:
 
-First, double the input:
+$
+\text{extra}=4\times\mathrm{ReLU}(x-2)
+$
 
-$$\text{base output}=2x.$$
+Watch what happens:
 
-That gives 2, 4, and 6. Only the third answer needs an extra 4. Build an extra contribution:
-
-$$\text{extra}=4\,\mathrm{ReLU}(x-2).$$
-
-The subtraction of 2 is a **bias**: neural-network layers can learn offsets as well as multipliers. Here we choose all the parameters ourselves to demonstrate a possible solution; we are not showing a training run.
-
-| Input x | Subtract 2 | Apply ReLU | Multiply by 4 |
+| Input $x$ | Subtract 2 | Apply ReLU | Multiply by 4 |
 |---:|---:|---:|---:|
-| 1 | −1 | 0 | 0 |
-| 2 | 0 | 0 | 0 |
-| 3 | 1 | 1 | 4 |
+| 1 | −1 | **0** | 0 |
+| 2 | 0 | **0** | 0 |
+| 3 | 1 | **1** | 4 |
 
-**ReLU keeps the extra contribution switched off until the input exceeds 2.** Add it to the doubled input:
+**ReLU keeps the extra contribution switched off until the input exceeds 2.**
 
-$$x=1:\quad\underbrace{2}_{\text{base}}+\underbrace{0}_{\text{extra}}=\boxed{2}.$$
+Now add that contribution to the doubled input:
 
-$$x=2:\quad\underbrace{4}_{\text{base}}+\underbrace{0}_{\text{extra}}=\boxed{4}.$$
-
-$$x=3:\quad\underbrace{6}_{\text{base}}+\underbrace{4}_{\text{extra}}=\boxed{10}.$$
+$
+\begin{aligned}
+x=1:\quad &2+0=\boxed{2}\\
+x=2:\quad &4+0=\boxed{4}\\
+x=3:\quad &6+4=\boxed{10}
+\end{aligned}
+$
 
 The complete rule is:
 
-$$\boxed{y=2x+4\,\mathrm{ReLU}(x-2)}.$$
+$
+\boxed{y=2x+4\,\mathrm{ReLU}(x-2)}
+$
 
-```mermaid
-flowchart TD
-    X["Input x"] --> B["Base: multiply by 2"]
-    X --> S["Subtract 2"]
-    S --> R["ReLU: negatives become 0"]
-    R --> E["Extra: multiply by 4"]
-    B --> Y["Add base and extra"]
-    E --> Y
-```
+Without ReLU, the extra contribution for input 1 would be **−4**, spoiling its answer. ReLU blocks that negative contribution while letting the positive contribution for input 3 through.
 
-Without ReLU, input 1 would produce an extra contribution of 4 × (1 − 2) = −4, spoiling its answer. ReLU blocks that negative contribution while letting the positive contribution for input 3 through.
-
-The bias alone does not solve the limitation: stacked multiplications and offsets still combine into one affine rule, y = ax + b. The first two target rows force a = 2 and b = 0, which still gives 6 for input 3. ReLU supplies the nonlinear, selective blocking.
-
-### 5. Why mention differentiability?
-
-This concerns training. Backpropagation uses slopes to determine how parameter changes affect the loss. ReLU has slope 0 below zero and 1 above zero. At exactly zero, where its ordinary derivative is undefined, training implementations use a chosen convention, commonly zero.
-
-ReLU changes which intermediate contributions pass through as the input changes. This prevents the whole calculation from generally being replaced by one fixed linear transformation.
+**That selective blocking is what plain matrix multiplication couldn’t do.**
 
 ## Learning log
 
@@ -445,5 +425,4 @@ ReLU changes which intermediate contributions pass through as the input changes.
 |---|---|
 | 2026-10-18 | Consolidated the October 14–16 discussion: Word2Vec, Q/K/V, learned matching, softmax, value mixing, residual updates, layers, next-token decoding, and training. |
 | 2026-10-18 | Combined all Chapter 2 notes into this single chapter file. |
-| 2026-10-18 | Added matrix-layer composition, why multiplication-only depth cannot fit 1→2, 2→4, 3→10, and the worked ReLU-and-bias solution with its arithmetic and diagram. |
 

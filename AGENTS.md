@@ -15,6 +15,11 @@ For future substantive questions about this book or inference engineering in ses
 
 Do not create scheduled tasks for ordinary conversational questions. Do not automatically add unrelated personal conversations. Do not promise cross-session execution unless this repository or its instructions are available in that session.
 
+## Chapter organization
+
+Use exactly one Markdown file per chapter: `chapters/chapter-NN-topic.md`.
+Keep that chapter's explanations, diagrams, questions, learning log, and executable examples in the same file. Embed runnable examples in code blocks. Do not create per-topic chapter files, separate chapter index files, or standalone example files for that chapter. Add future questions as sections in the existing chapter file.
+
 ## Explanation style that works
 
 - Begin with why an operation is needed, then show how it works.

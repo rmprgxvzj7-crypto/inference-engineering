@@ -10,7 +10,7 @@ For future substantive questions about this book or inference engineering in ses
 1. Explain the concept in conversation at the user's pace.
 2. Add the resolved explanation and important follow-up clarifications to the relevant chapter. If understanding is still evolving, label the unresolved point rather than claiming mastery.
 3. Update the chapter index and learning log when needed.
-4. Verify changed arithmetic or runnable examples; avoid irrelevant test suites.
+4. Verify changed arithmetic; avoid irrelevant test suites.
 5. Commit and push to the established remote when access is available. Report the actual commit/link; if blocked, state that it is local only. No new permission is needed for these requested note updates. Respect remote protections and never force-push.
 
 Do not create scheduled tasks for ordinary conversational questions. Do not automatically add unrelated personal conversations. Do not promise cross-session execution unless this repository or its instructions are available in that session.
@@ -18,7 +18,11 @@ Do not create scheduled tasks for ordinary conversational questions. Do not auto
 ## Chapter organization
 
 Use exactly one Markdown file per chapter: `chapters/chapter-NN-topic.md`.
-Keep that chapter's explanations, diagrams, questions, learning log, and executable examples in the same file. Embed runnable examples in code blocks. Do not create per-topic chapter files, separate chapter index files, or standalone example files for that chapter. Add future questions as sections in the existing chapter file.
+Keep that chapter's requested explanations, diagrams, questions, and learning log in the same file. Do not create per-topic chapter files, separate chapter index files, or standalone example files for that chapter. Add future questions as sections in the existing chapter file.
+
+## Scope of additions
+
+Document only the material the user asks to add and the explanations of their questions. Do not add runnable code, exercises, companion implementations, suggested future topics, or other supplementary material unless explicitly requested. The user specifically rejected the unsolicited runnable numerical companion. Preserve the worked arithmetic discussed in conversation; it is part of the requested explanation.
 
 ## Explanation style that works
 

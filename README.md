@@ -21,7 +21,7 @@ These are original learning notes from our conversations, not a reproduction of 
 
 Read one numbered step at a time. Keep track of what every number represents. All tiny vectors and weights are invented to expose the arithmetic; they are not measurements from an actual LLM.
 
-Each chapter has **one Markdown file**, containing its explanations, diagrams, worked examples, and learning log. Chapter 2 also embeds a Python numerical companion with instructions for running it (no dependencies).
+Each chapter has **one Markdown file**, containing its explanations, diagrams, worked examples, and learning log.
 
 ## Ongoing updates
 

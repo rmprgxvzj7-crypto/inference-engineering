@@ -339,25 +339,25 @@ Imagine we want a network to learn these answers:
 
 **Try one layer: multiply by 2.**
 
-$
+$$
 1\times2=2\quad \checkmark
-$
-$
+$$
+$$
 2\times2=4\quad \checkmark
-$
-$
+$$
+$$
 3\times2=6\quad \text{❌ We wanted 10}
-$
+$$
 
 You might think: **“One layer is too simple. Let’s add more layers!”**
 
 But suppose three layers learn to multiply by **4**, then **5**, then **0.1**:
 
-$
+$$
 x \xrightarrow{\times4} 4x
 \xrightarrow{\times5}20x
 \xrightarrow{\times0.1}2x
-$
+$$
 
 We’re still just multiplying by 2. **The third answer is still 6.**
 
@@ -377,17 +377,17 @@ Here’s one possible solution. We’re choosing the numbers ourselves to show h
 
 **First, double the input:**
 
-$
+$$
 \text{base output}=2x
-$
+$$
 
 That gives us $2,4,6$. The first two answers are correct. **Only the third needs an extra 4.**
 
 So build an extra contribution using:
 
-$
+$$
 \text{extra}=4\times\mathrm{ReLU}(x-2)
-$
+$$
 
 Watch what happens:
 
@@ -401,19 +401,19 @@ Watch what happens:
 
 Now add that contribution to the doubled input:
 
-$
+$$
 \begin{aligned}
 x=1:\quad &2+0=\boxed{2}\\
 x=2:\quad &4+0=\boxed{4}\\
 x=3:\quad &6+4=\boxed{10}
 \end{aligned}
-$
+$$
 
 The complete rule is:
 
-$
+$$
 \boxed{y=2x+4\,\mathrm{ReLU}(x-2)}
-$
+$$
 
 Without ReLU, the extra contribution for input 1 would be **−4**, spoiling its answer. ReLU blocks that negative contribution while letting the positive contribution for input 3 through.
 
